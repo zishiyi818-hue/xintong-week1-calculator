@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12", "3.13"]
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 运行单元测试
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python -m unittest discover -s tests -v
+
+      - name: 命令行冒烟测试
+        env:
+          PYTHONIOENCODING: utf-8
+        run: printf '6\n*\n7\nq\n' | python calculator.py
